@@ -1,6 +1,5 @@
 clear; clc; close all;
-%% ===================== figure5(a) =====================
-%% ===================== 1. 固定参数 =====================
+%% figure5(a) 
 delta1=1;
 alphaL = pi/6;
 alphaR = pi;
@@ -16,7 +15,6 @@ epsD = delta1 * t1R / delta2;
 epsU = -epsD;
 tol =  1e-10;
 
-%% ===================== 2. 横轴 dRD，纵轴 dRU =====================
 N_dRD = 1001; 
 N_dRU = 1001;
 dRD_list = linspace(-12, 12, N_dRD)+ 1e-9;     
@@ -76,13 +74,13 @@ a2 = -exp(alphaL*1i)^2 * t1L^2 * epsD^2 ...
      - d1D^2 * dLU^2 ...
      - dLD^2 * d1U^2;
 
-%% ===================== 4. 拓扑 W 函数 =====================
+
 W1_fun = @(x) x + sqrt(x.^2 - 1);
 W2_fun = @(x) x - sqrt(x.^2 - 1);
 Wfun = @(x) max(abs(W1_fun(x)), abs(W2_fun(x)));
 WXe = Wfun(Xe);
 
-%% -------- E1 分支 --------
+
 E1 = (-lam1 + sqrt(discE)) ./ (2.*lam0);
 B1 = ( (sumR.*E1 + wR) .* (sumL.*E1 + wL) ) ./ p1.^2 - 1;
 C1 = - ( (E1.^2.*a0 + E1.*a1 + a2).*r.^4 - (sumR.*E1 + wR).^2 ) ./ (2.*r.^2.*p1.^2);
@@ -92,7 +90,7 @@ Ym1 = (B1.*Xe - C1 - sqrt(discY1)) ./ (2.*Xe.^2);
 Wm_YZ1 = max(Wfun(Yp1), Wfun(Ym1));
 cond_E1 = (Wm_YZ1 - WXe) <= 1e-9; 
 
-%% -------- E2 分支 --------
+
 E2 = (-lam1 - sqrt(discE)) ./ (2.*lam0);
 B2 = ( (sumR.*E2 + wR) .* (sumL.*E2 + wL) ) ./ p1.^2 - 1;
 C2 = - ( (E2.^2.*a0 + E2.*a1 + a2).*r.^4 - (sumR.*E2 + wR).^2 ) ./ (2.*r.^2.*p1.^2);
@@ -102,13 +100,13 @@ Ym2 = (B2.*Xe - C2 - sqrt(discY2)) ./ (2.*Xe.^2);
 Wm_YZ2 = max(Wfun(Yp2), Wfun(Ym2));
 cond_E2 = (Wm_YZ2 - WXe) <= 1e-9; 
 
-%% ===================== 5. 相图 =====================
+
 phase_map = zeros(size(dRD_grid)); 
 phase_map(cond_E1 & ~cond_E2) = 1; 
 phase_map(~cond_E1 & cond_E2) = 2; 
 phase_map(cond_E1 & cond_E2)  = 3; 
 
-%% ===================== 6. 绘图：横 dRD | 纵 dRU =====================
+
 fig5 = figure('Position', [120, 80, 980, 1080], 'Color', 'w');
 ax_phase = axes('Parent', fig5, 'Position', [0.085, 0.705, 0.385, 0.245]);
 ax_E     = axes('Parent', fig5, 'Position', [0.605, 0.705, 0.330, 0.245]);
@@ -155,7 +153,6 @@ text(ax_phase, 0.52, 0.42, '$\times$', 'Units', 'normalized', ...
 
 clc;
 N = 30; L = 2*N;
-%% ===================== 1. 物理参数 =====================
 delta1=1;
 alphaL = pi/6;
 alphaR = pi;
@@ -170,7 +167,7 @@ epsD = delta1 * t1R / delta2;
 epsU = -epsD;
 dRD=0.4; dRU=-3;
 
-%% ===================== 2. Numerical OBC 能谱 =====================
+%% Numerical OBC 
 ao = zeros(1,L); ao(1:2:end)=epsU; ao(2:2:end)=epsD;
 a1u = zeros(1,L-1); a1u(1:2:end)=d1U; a1u(2:2:end)=dLD; 
 a1d = zeros(1,L-1); a1d(1:2:end)=d1D; a1d(2:2:end)=dRU;
@@ -186,8 +183,7 @@ real_rounded = round(real(EE)/epsilon) * epsilon;
 [~, ind1] = sortrows([real_rounded, imag(EE)], [1, 2]); 
 eNum = EE(ind1);         
 vecNum = V(:, ind1);
-%% PBC 谱
-%% ===================== 3. PBC =====================
+%% PBC 
 M1 = 6000;                    
 kA = linspace(-pi, pi, M1);
 kB = linspace(pi, 3*pi, M1);
@@ -241,7 +237,7 @@ end
 EPBC1_plot = break_large_jumps(EPBC1, 30);
 EPBC2_plot = break_large_jumps(EPBC2, 30);
 
-%% ===================== 3. 解析 GBZ  =====================
+%%GBZ
 M_full = 1200; 
 theta_all = linspace(0, 2*pi, M_full + 2);  
 theta0    = theta_all(2:end-1);
@@ -540,7 +536,6 @@ for j = 1:length(eNum)
     end
 end
 
-%% ===================== 边态能量和beta =====================
 eD = epsD;eU = epsU;aL = alphaL;aR = alphaR;
 denomL = t1L*t2L - dLD*dLU;
 denomR = t1R*t2R - dRD*dRU;
@@ -594,7 +589,7 @@ p1 = (4*dLU*TR + 4*TL*dRU - 2*d1U*epsDif);
 p0 =  d1U^2 - 4*dLU*dRU;
 M_branch_roots = roots([p4, p3, p2, p1, p0]);
 
-%% ===================== figure5(b) =====================
+%% figure5(b)
 axes(ax_E); cla(ax_E); hold(ax_E, 'on');
 scatter(ax_E, real(E_points), imag(E_points), 12, ...
     'MarkerFaceColor', [0.70 0.62 0.15], 'MarkerEdgeColor', 'none', ...
@@ -615,7 +610,7 @@ text(ax_E, real(E1)+0.10, imag(E1)+0.35, '$E_1$', ...
 text(ax_E, real(E2)-0.35, imag(E2)-0.55, '$E_2$', ...
     'Interpreter', 'latex', 'FontSize', 12, 'Color', 'b');
 
-%% ===================== figure5(c) =====================
+%% figure5(c)
 axes(ax_beta); cla(ax_beta); hold(ax_beta, 'on');
 scatter(ax_beta, real(GBZ_points), imag(GBZ_points), 8, angle(GBZ_points), 'filled', ...
     'MarkerFaceAlpha', 0.85, 'MarkerEdgeAlpha', 0.85);
@@ -674,7 +669,7 @@ for i = 1:4
         'Interpreter', 'latex', 'FontSize', 12, 'Color', 'blue');
 end
 
-%% ===================== figure5(d) =====================
+%% figure5(d) 
 axes(ax_M); cla(ax_M); hold(ax_M, 'on');
 scatter(ax_M, real(M_GBZ), imag(M_GBZ), 8, angle(M_GBZ), 'filled', ...
     'MarkerFaceAlpha', 0.85, 'MarkerEdgeAlpha', 0.85);
@@ -720,7 +715,7 @@ function [beta1, beta2, beta3, beta4] = compute_beta(E, t1L, t2L, dLD, dLU, epsU
     beta3 = -(alpha0 + K - A2)/2;
     beta4 = -(alpha0 + K + A2)/2;
 end
-%% ===================== 局部函数 =====================
+
 function z_out = break_large_jumps(z_in, fac)
     
     z_out = z_in;
